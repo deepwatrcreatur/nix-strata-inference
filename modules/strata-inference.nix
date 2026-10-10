@@ -25,7 +25,7 @@ in
 
     port = lib.mkOption {
       type = lib.types.port;
-      default = 8080;
+      default = 8000;
       description = "Port to listen on for the OpenAI/Anthropic API.";
     };
 
