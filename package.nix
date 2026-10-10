@@ -21,6 +21,13 @@ let
     pillow
     psutil
   ]);
+
+  llamaCppSrc = fetchFromGitHub {
+    owner = "ggml-org";
+    repo = "llama.cpp";
+    rev = "3cf03257f219afbe7334045ff7c6a06ac68c627d";
+    hash = "sha256-SRGoXa+4ACBCB3eaG9XFYhMN1i0FyPEy9Rrer+dFGYI=";
+  };
 in
 stdenv.mkDerivation rec {
   pname = "strata-inference";
@@ -50,6 +57,7 @@ stdenv.mkDerivation rec {
     "-DSTRATA_ENABLE_CUDA=ON"
     "-DSTRATA_BUILD_TESTS=OFF"
     "-DCMAKE_CUDA_ARCHITECTURES=${cudaArch}"
+    "-DSTRATA_GGML_DIR=${llamaCppSrc}"
   ] ++ lib.optionals experimentalSm60 [
     "-DSTRATA_EXPERIMENTAL_SM60=ON"
   ];
