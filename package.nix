@@ -94,7 +94,7 @@ stdenv.mkDerivation rec {
 #!/bin/sh
 export PATH="$out/libexec/strata:\$PATH"
 export PYTHONPATH="$out/share/strata:$out/share/strata/tools:\$PYTHONPATH"
-exec ${pythonEnv}/bin/python -m serve.server --engine strata "\$@"
+exec ${pythonEnv}/bin/python -m serve.server "\$@"
 WRAPPER
     chmod +x $out/bin/strata-inference
 

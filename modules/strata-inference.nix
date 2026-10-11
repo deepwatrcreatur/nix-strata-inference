@@ -47,6 +47,18 @@ in
       description = "Optional custom configuration JSON file path.";
     };
 
+    engine = lib.mkOption {
+      type = lib.types.enum [ "strata" "mock" ];
+      default = if cfg.configFile != null then "strata" else "mock";
+      description = "Engine backend to use: 'strata' (compiled GPU engine) or 'mock' (lightweight simulated server). Defaults to 'strata' when configFile is set, otherwise 'mock'.";
+    };
+
+    lazy = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Start the API unloaded; the engine starts with the first request.";
+    };
+
     openFirewall = lib.mkOption {
       type = lib.types.bool;
       default = true;
@@ -111,9 +123,11 @@ in
         WorkingDirectory = cfg.dataDir;
         ExecStart =
           let
+            engineArg = "--engine ${cfg.engine}";
             configArg = lib.optionalString (cfg.configFile != null) "--config ${cfg.configFile}";
+            lazyArg = lib.optionalString (cfg.lazy && cfg.engine == "strata") "--lazy";
           in
-          "${cfg.package}/bin/strata-inference --host ${cfg.host} --port ${toString cfg.port} --models-dir ${cfg.modelsDir} ${configArg} ${lib.escapeShellArgs cfg.extraArgs}";
+          "${cfg.package}/bin/strata-inference ${engineArg} --host ${cfg.host} --port ${toString cfg.port} ${configArg} ${lazyArg} ${lib.escapeShellArgs cfg.extraArgs}";
         Restart = "on-failure";
         RestartSec = "5s";
         LimitMEMLOCK = "infinity";
